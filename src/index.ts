@@ -142,7 +142,8 @@ async function CreateAd(data: InteractionObject, env: Env) {
 	var result = await fetch("https://key.tpc3.org/api/admin/ad/create", {
 		method: "POST",
 		headers: {
-			"Content-Type": "application/json"
+			"Content-Type": "application/json",
+			"User-Agent": "MisskeyIntegrate",
 		},
 		body: JSON.stringify({
 			i: env.MISSKEY_TOKEN,
