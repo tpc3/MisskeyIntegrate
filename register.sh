@@ -2,4 +2,4 @@
 
 echo "Authorization: Bearer $TOKEN"
 
-curl -X PUT -d @command.json -H "Content-type: application/json" -H "Authorization: Bearer $TOKEN" https://discord.com/api/v10/applications/$APPID/commands
+curl -X PUT -d @command.json -H "Content-type: application/json" -H "Authorization: Bearer $TOKEN" https://discord.com/api/v10/applications/$APPID/guilds/$GUILDID/commands
