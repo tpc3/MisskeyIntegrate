@@ -97,7 +97,6 @@ async function processCommand(req: Request, env: Env): Promise<Response> {
 async function CreateAd(data: InteractionObject, env: Env) {
 	var url: string | null = null;
 	var image: AttachmentData | null = null;
-	var form: string | null = null;
 	for (const option of data.data.options[0].options[0].options) {
 		switch (option.name) {
 			case "url":
@@ -106,14 +105,11 @@ async function CreateAd(data: InteractionObject, env: Env) {
 			case "image":
 				image = data.data.resolved!.attachments[option.value as number];
 				break;
-			case "form":
-				form = option.value as string;
-				break;
 			default:
 				break;
 		}
 	}
-	if (url == null || image == null || form == null) {
+	if (url == null || image == null) {
 		return new JsonResponse({
 			"type": InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
 			"data": {
@@ -149,7 +145,7 @@ async function CreateAd(data: InteractionObject, env: Env) {
 			i: env.MISSKEY_TOKEN,
 			url: url,
 			memo: 'made by MisskeyIntegrate\nRequested by ' + data.member?.user.username + "(" + data.member?.user.id + ")",
-			place: form,
+			place: 'horizontal',
 			priority: 'middle',
 			ratio: 10,
 			expiresAt: new Date().getTime() + (AdDuration * 1000),
