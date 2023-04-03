@@ -167,6 +167,7 @@ async function CreateAd(data: InteractionObject, env: Env) {
 			place: 'horizontal',
 			priority: 'middle',
 			ratio: 10,
+			startsAt: new Date().getTime(),
 			expiresAt: new Date().getTime() + (AdDuration * 1000),
 			imageUrl: image,
 		}),
