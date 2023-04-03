@@ -96,14 +96,14 @@ async function processCommand(req: Request, env: Env): Promise<Response> {
 
 async function CreateAd(data: InteractionObject, env: Env) {
 	var url: string | null = null;
-	var image: AttachmentData | null = null;
+	var image: string | null = null;
 	for (const option of data.data.options[0].options[0].options) {
 		switch (option.name) {
 			case "url":
 				url = option.value as string;
 				break;
 			case "image":
-				image = data.data.resolved!.attachments[option.value as number];
+				image = option.value as string;
 				break;
 			default:
 				break;
@@ -127,11 +127,30 @@ async function CreateAd(data: InteractionObject, env: Env) {
 			}
 		})
 	}
-	if (!image.content_type.startsWith("image")) {
+	var imageUrl: URL;
+	try {
+		imageUrl = new URL(image);
+	} catch (_) {
 		return new JsonResponse({
 			"type": InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
 			"data": {
-				"content": "attachment is not image",
+				"content": "image is not valid url",
+			}
+		})
+	}
+	if (imageUrl.protocol != "https:") {
+		return new JsonResponse({
+			"type": InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+			"data": {
+				"content": "image URL's protocol is not https",
+			}
+		})
+	}
+	if (imageUrl.hostname != "cdn.discordapp.com" && imageUrl.hostname != "cdn.discord.com") {
+		return new JsonResponse({
+			"type": InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+			"data": {
+				"content": "image URL is not DiscordCDN",
 			}
 		})
 	}
@@ -149,7 +168,7 @@ async function CreateAd(data: InteractionObject, env: Env) {
 			priority: 'middle',
 			ratio: 10,
 			expiresAt: new Date().getTime() + (AdDuration * 1000),
-			imageUrl: image.url,
+			imageUrl: image,
 		}),
 	});
 	if (result.ok) {
