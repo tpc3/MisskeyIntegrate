@@ -146,7 +146,7 @@ async function CreateAd(data: InteractionObject, env: Env) {
 			}
 		})
 	}
-	if (imageUrl.hostname != "cdn.discordapp.com" && imageUrl.hostname != "cdn.discord.com") {
+	if (imageUrl.hostname != "cdn.discordapp.com" && imageUrl.hostname != "cdn.discord.com" && imageUrl.hostname != "media.discordapp.net") {
 		return new JsonResponse({
 			"type": InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
 			"data": {
@@ -154,6 +154,8 @@ async function CreateAd(data: InteractionObject, env: Env) {
 			}
 		})
 	}
+	imageUrl.searchParams.delete("width");
+	imageUrl.searchParams.delete("height");
 	var result = await fetch("https://key.tpc3.org/api/admin/ad/create", {
 		method: "POST",
 		headers: {
