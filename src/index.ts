@@ -164,14 +164,15 @@ async function CreateAd(data: InteractionObject, env: Env) {
 		},
 		body: JSON.stringify({
 			i: env.MISSKEY_TOKEN,
-			url: url,
-			memo: 'made by MisskeyIntegrate\nRequested by ' + data.member?.user.username + "(" + data.member?.user.id + ")",
+			expiresAt: new Date().getTime() + (AdDuration * 1000),
+			startsAt: new Date().getTime(),
 			place: 'horizontal',
 			priority: 'middle',
 			ratio: 10,
-			startsAt: new Date().getTime(),
-			expiresAt: new Date().getTime() + (AdDuration * 1000),
+			url: url,
 			imageUrl: image,
+			memo: 'made by MisskeyIntegrate\nRequested by ' + data.member?.user.username + "(" + data.member?.user.id + ")",
+			dayOfWeek: 0,
 		}),
 	});
 	if (result.ok) {
