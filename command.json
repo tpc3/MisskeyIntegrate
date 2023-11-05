@@ -24,11 +24,11 @@
                                 "required": true
                             },
                             {
-                                "type": 3,
+                                "type": 11,
                                 "name": "image",
-                                "description": "image URL (Discord CDN only)",
+                                "description": "image",
                                 "description_localizations": {
-                                    "ja": "画像URL(DiscordCDNのみ)"
+                                    "ja": "画像"
                                 },
                                 "required": true
                             }

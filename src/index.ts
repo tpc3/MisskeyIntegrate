@@ -96,14 +96,14 @@ async function processCommand(req: Request, env: Env): Promise<Response> {
 
 async function CreateAd(data: InteractionObject, env: Env) {
 	var url: string | null = null;
-	var image: string | null = null;
+	var image: AttachmentData | null = null;
 	for (const option of data.data.options[0].options[0].options) {
 		switch (option.name) {
 			case "url":
 				url = option.value as string;
 				break;
 			case "image":
-				image = option.value as string;
+				image = data.data.resolved!.attachments[option.value as number];
 				break;
 			default:
 				break;
@@ -127,30 +127,11 @@ async function CreateAd(data: InteractionObject, env: Env) {
 			}
 		})
 	}
-	var imageUrl: URL;
-	try {
-		imageUrl = new URL(image);
-	} catch (_) {
+	if (!image.content_type.startsWith("image")) {
 		return new JsonResponse({
 			"type": InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
 			"data": {
-				"content": "image is not valid url",
-			}
-		})
-	}
-	if (imageUrl.protocol != "https:") {
-		return new JsonResponse({
-			"type": InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-			"data": {
-				"content": "image URL's protocol is not https",
-			}
-		})
-	}
-	if (imageUrl.hostname != "cdn.discordapp.com" && imageUrl.hostname != "cdn.discord.com" && imageUrl.hostname != "media.discordapp.net") {
-		return new JsonResponse({
-			"type": InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-			"data": {
-				"content": "image URL is not DiscordCDN",
+				"content": "attachment is not image",
 			}
 		})
 	}
