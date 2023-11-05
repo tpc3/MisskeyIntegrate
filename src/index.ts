@@ -27,6 +27,7 @@ export interface Env {
 	// MY_SERVICE: Fetcher;
 	DISCORD_PUBLIC_KEY: string;
 	MISSKEY_TOKEN: string;
+	FOLDER_ID: string;
 }
 
 interface InteractionObject {
@@ -72,6 +73,10 @@ class JsonResponse extends Response {
 			}
 		})
 	}
+}
+
+class MisskeyUploadResponse {
+	url!: string;
 }
 
 async function processCommand(req: Request, env: Env): Promise<Response> {
@@ -135,8 +140,32 @@ async function CreateAd(data: InteractionObject, env: Env) {
 			}
 		})
 	}
-	imageUrl.searchParams.delete("width");
-	imageUrl.searchParams.delete("height");
+
+	var downloadResult = await fetch(image.url);
+	var imageBlob = await downloadResult.blob();
+
+	var uploadBody = new FormData();
+	uploadBody.set("i", env.MISSKEY_TOKEN);
+	uploadBody.set("file", imageBlob);
+	uploadBody.set("folderId", env.FOLDER_ID);
+
+	var uploadResult = await fetch("https://key.tpc3.org/api/drive/files/create", {
+		method: "POST",
+		headers: {
+			"User-Agent": "MisskeyIntegrate",
+		},
+		body: uploadBody,
+	});
+	if (!uploadResult.ok) {
+		return new JsonResponse({
+			"type": InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+			"data": {
+				"content": "Failed to upload image: "+uploadResult.status + " "+ uploadResult.statusText + "\n"+await uploadResult.text(),
+			}
+		})
+	}
+	var uploadResp: MisskeyUploadResponse = await uploadResult.json();
+
 	var result = await fetch("https://key.tpc3.org/api/admin/ad/create", {
 		method: "POST",
 		headers: {
@@ -151,7 +180,7 @@ async function CreateAd(data: InteractionObject, env: Env) {
 			priority: 'middle',
 			ratio: 10,
 			url: url,
-			imageUrl: image,
+			imageUrl: uploadResp.url,
 			memo: 'made by MisskeyIntegrate\nRequested by ' + data.member?.user.username + "(" + data.member?.user.id + ")",
 			dayOfWeek: 0,
 		}),
