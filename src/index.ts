@@ -211,7 +211,7 @@ export default {
 		const signature = req.headers.get('X-Signature-Ed25519')!;
 		const timestamp = req.headers.get('X-Signature-Timestamp')!;
 		const body = await req.clone().arrayBuffer();
-		const valid = verifyKey(body, signature, timestamp, env.DISCORD_PUBLIC_KEY);
+		const valid: boolean = await verifyKey(body, signature, timestamp, env.DISCORD_PUBLIC_KEY);
 		if (!valid) {
 			return new Response("Invalid signature", { status: 401 })
 		}

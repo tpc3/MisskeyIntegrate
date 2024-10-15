@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/tpc3.org/MissKeyIntegrate#readme",
   "dependencies": {
-    "discord-interactions": "^3.4.0",
+    "discord-interactions": "^4.1.0",
     "wrangler": "^3.5.1"
   },
   "devDependencies": {
